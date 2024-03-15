@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class Posts {
-    static int idCounter = 1;
+    static int count = 0;
 
     private int id;
     private String title;
@@ -23,7 +23,9 @@ public class Posts {
     }
 
     public Posts() {
+        this.id = ++count;
         this.creationDate = LocalDateTime.now();
+
     }
 
     // Getters and setters
