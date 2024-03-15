@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/posts")
 public class PostsController {
-    private List<Posts> posts = new ArrayList<>();
+    private  List<Posts> posts = new ArrayList<>();
 
     // Insert post
     @PostMapping
@@ -22,5 +22,8 @@ public class PostsController {
         posts.add(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
+
+    //Read all post
+    public
 
 }
