@@ -20,7 +20,6 @@ public class PostsController {
         posts.add(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
     }
-
     // Read all posts
     @GetMapping
     public ResponseEntity<List<Posts>> getAllPosts() {
@@ -36,13 +35,14 @@ public class PostsController {
     // Read post by title
     @GetMapping("/searchByTitle")
     public ResponseEntity<Posts> getPostByTitle(@RequestParam String title) {
-        Optional <Posts> optionalPosts = posts.stream().filter(po -> po.getTitle().equalsIgnoreCase(title))
+        Optional<Posts> optionalPosts = posts.stream().filter(po -> po.getTitle().equalsIgnoreCase(title))
                 .findFirst();
         return optionalPosts.map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
 
     }
     // Read post by author
+    @GetMapping("/searchAuthor")
     public ResponseEntity<Posts> getPostByAuthor(@RequestParam String author) {
         List<Posts> foundPosts = new ArrayList<>();
         for (Posts posts1 : posts) {
@@ -53,10 +53,32 @@ public class PostsController {
         if (foundPosts.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok((Posts)foundPosts);
+        return ResponseEntity.ok((Posts) foundPosts);
     }
-
-
+    // Update post by id
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateById(@PathVariable int id, @RequestBody Posts updatePost) {
+        for (int i = 0; i < posts.size(); i++) {
+           if (posts.get(i).getId() == id){
+               updatePost.setId(id);
+               updatePost.setCreationDate(posts.get(i).getCreationDate());
+               posts.set(i, updatePost);
+               return ResponseEntity.ok("You're update succrssfully!");
+           }
+        }
+        return ResponseEntity.notFound().build();
+    }
+    // Delete post by id
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteById(@PathVariable int id) {
+        for (Posts posts1 : posts) {
+            if (posts1.getId() == id) {
+                posts.remove(posts1);
+                return ResponseEntity.ok("Congratulation your deleted is successfully!");
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 
 

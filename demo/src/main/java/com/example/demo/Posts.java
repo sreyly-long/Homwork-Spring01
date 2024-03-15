@@ -66,6 +66,10 @@ public class Posts {
         return creationDate;
     }
 
+    public void setCreationDate(LocalDateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
     public List<String> getTags() {
         return tags;
     }
