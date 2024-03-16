@@ -1,24 +1,64 @@
-package com.example.demo;
+package com.example.demo.controller;
 
+import com.example.demo.models.Posts;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 
 @RestController
 @RequestMapping("/api/v1/posts")
 public class PostsController {
+    AtomicInteger id = new AtomicInteger(1);
     private List<Posts> posts = new ArrayList<>();
+
+    public PostsController() {
+        posts.add(new Posts(
+                id.getAndIncrement(),
+                "Java Programming",
+                "Java programming is high-level",
+                "Jonh Doe",
+                LocalDateTime.now(),
+                List.of("Java", "Programming", "OOP")
+        ));
+        posts.add(new Posts(
+                id.getAndIncrement(),
+                "C# Programming",
+                "C# Programming is high-level",
+                "Davide",
+                LocalDateTime.now(),
+               List.of("C#","Programming","OOP")
+        ));
+        posts.add(new Posts(
+                id.getAndIncrement(),
+                "Phython Programming",
+                "Phython Programming i high-level",
+                "wonstack",
+                LocalDateTime.now(),
+                List.of("Phython","Programming","OOP")
+        ));
+
+    }
 
     // Insert post
     @PostMapping
     public ResponseEntity<Posts> insertPost(@RequestBody Posts post) {
+        post.setId(id.getAndIncrement());
+        post.setCreationDate(LocalDateTime.now());
         posts.add(post);
         return ResponseEntity.status(HttpStatus.CREATED).body(post);
+    }
+    //Read  all posts tage multiple
+    @GetMapping("/{tags}")
+    public ResponseEntity<List<Posts>> getAllPosts(@RequestParam(required = false) List<String> tags) {
+        List<Posts> filterPosts = posts.stream().filter(posts1 -> tags == null || new HashSet<>(posts1.getTags()).containsAll(tags))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(filterPosts);
     }
     // Read all posts
     @GetMapping
@@ -44,16 +84,10 @@ public class PostsController {
     // Read post by author
     @GetMapping("/searchAuthor")
     public ResponseEntity<Posts> getPostByAuthor(@RequestParam String author) {
-        List<Posts> foundPosts = new ArrayList<>();
-        for (Posts posts1 : posts) {
-            if (posts1.getAuthor().equalsIgnoreCase(author)) {
-                foundPosts.add(posts1);
-            }
-        }
-        if (foundPosts.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok((Posts) foundPosts);
+        Optional<Posts> optionalPosts = posts.stream().filter(po -> po.getAuthor().equalsIgnoreCase(author))
+                .findFirst();
+        return optionalPosts.map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
     // Update post by id
     @PutMapping("/{id}")
@@ -68,6 +102,8 @@ public class PostsController {
         }
         return ResponseEntity.notFound().build();
     }
+
+
     // Delete post by id
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteById(@PathVariable int id) {
@@ -79,7 +115,6 @@ public class PostsController {
         }
         return ResponseEntity.notFound().build();
     }
-
 
 
 }

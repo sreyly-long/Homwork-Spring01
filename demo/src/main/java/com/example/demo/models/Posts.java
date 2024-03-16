@@ -1,10 +1,9 @@
-package com.example.demo;
+package com.example.demo.models;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Posts {
-    static int count = 0;
 
     private int id;
     private String title;
@@ -22,11 +21,6 @@ public class Posts {
         this.tags = tags;
     }
 
-    public Posts() {
-        this.id = ++count;
-        this.creationDate = LocalDateTime.now();
-
-    }
 
     // Getters and setters
 
